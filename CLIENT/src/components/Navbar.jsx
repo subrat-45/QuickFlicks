@@ -30,14 +30,14 @@ const Navbar = () => {
             <Link to='/movies' className='text-white hover:text-primary transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
               Movies
             </Link>
-            <Link to='/theaters' className='text-white hover:text-primary transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
-              Theaters
-            </Link>
             <Link to='/releases' className='text-white hover:text-primary transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
               Releases
             </Link>
             <Link to='/favorites' className='text-white hover:text-primary transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
               Favorites
+            </Link>
+            <Link to='/my-booking' className='text-white hover:text-primary transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
+              My Bookings
             </Link>
           </div>
 

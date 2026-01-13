@@ -16,11 +16,11 @@ const Navbar = () => {
 
   return (
     <nav className='w-full fixed top-0 left-0 z-50 bg-transparent'>
-      <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4'>
-        <div className='flex items-center jsm:ustify-evenly justify-between'>
+      <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='flex items-center justify-between h-20'>
           
-          <Link to='/' className='flex-shrink-0 z-50'>
-            <img src={assets.logo} alt="Website Logo" className='h-8 w-auto' />
+          <Link to='/' className='flex-shrink-0 z-50 flex items-center py-4'>
+            <img src={assets.logo} alt="Website Logo" className='h-24 w-auto object-contain' />
           </Link>
 
           <div className='hidden md:flex items-center backdrop-blur-xl bg-white/10 rounded-full px-6 py-2.5 border border-white/20 shadow-lg gap-1 hover:scale-101 duration-300'>

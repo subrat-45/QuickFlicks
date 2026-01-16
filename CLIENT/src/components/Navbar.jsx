@@ -2,6 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import { Menu, Search, TicketPlus, X, Mail, Lock, User, Eye, EyeOff, Film, Ticket, Star, Clock, LogOut } from "lucide-react"
+import axios from 'axios'
+
+// Generate random color for profile picture
+const getRandomColor = () => {
+  const colors = [
+    'bg-gradient-to-r from-red-500 to-pink-500',
+    'bg-gradient-to-r from-blue-500 to-cyan-500',
+    'bg-gradient-to-r from-green-500 to-emerald-500',
+    'bg-gradient-to-r from-purple-500 to-indigo-500',
+    'bg-gradient-to-r from-orange-500 to-amber-500',
+    'bg-gradient-to-r from-teal-500 to-green-500',
+    'bg-gradient-to-r from-pink-500 to-rose-500',
+    'bg-gradient-to-r from-indigo-500 to-blue-500',
+  ]
+  return colors[Math.floor(Math.random() * colors.length)]
+}
 
 // Auth Modal Component with Split Screen Design
 const AuthModal = ({ isOpen, onClose }) => {
@@ -13,7 +29,6 @@ const AuthModal = ({ isOpen, onClose }) => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
   })
 
   useEffect(() => {
@@ -33,7 +48,7 @@ const AuthModal = ({ isOpen, onClose }) => {
   }
 
   const validateForm = () => {
-    if (!formData.email || !formData.password) {
+    if (!formData.email) {
       setError('Please fill in all required fields')
       return false
     }
@@ -43,61 +58,59 @@ const AuthModal = ({ isOpen, onClose }) => {
         setError('Please enter your name')
         return false
       }
-      if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match')
-        return false
-      }
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters')
-        return false
-      }
     }
     
     return true
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (!validateForm()) return
-    
-    setLoading(true)
-    setError('')
-    
-    try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
-      const payload = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { name: formData.name, email: formData.email, password: formData.password }
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong')
-      }
-      
-      // Store token and user data in memory/context instead of localStorage
-      // You should use Context API or state management for this
-      sessionStorage.setItem('token', data.token)
-      sessionStorage.setItem('user', JSON.stringify(data.user))
-      
-      onClose()
-      window.location.reload()
-      
-    } catch (err) {
-      setError(err.message || 'An error occurred. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setLoading(true);
+  setError('');
+
+  try {
+    const endpoint = isLogin
+      ? `${import.meta.env.VITE_API_URL}/api/users/login`
+      : `${import.meta.env.VITE_API_URL}/api/users/register`;
+
+    const payload = isLogin
+      ? { email: formData.email, password: formData.password }
+      : { name: formData.name, email: formData.email, password: formData.password };
+
+    const response = await axios.post(endpoint, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+
+    const data = response.data;
+
+    const userData = {
+      ...data.user,
+      profileColor: getRandomColor(),
+    };
+
+    sessionStorage.setItem('token', data.token);
+    sessionStorage.setItem('user', JSON.stringify(userData));
+
+    onClose();
+    window.location.reload();
+
+  } catch (err) {
+    setError(
+      err.response?.data?.message ||
+      err.message ||
+      'An error occurred. Please try again.'
+    );
+  } finally {
+    setLoading(false);
   }
+};
+
 
   const handleGoogleLogin = () => {
     // Redirect to your backend Google OAuth endpoint
@@ -106,7 +119,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
   const switchMode = () => {
     setIsLogin(!isLogin)
-    setFormData({ name: '', email: '', password: '', confirmPassword: '' })
+    setFormData({ name: '', email: '', password: ''})
     setError('')
   }
 
@@ -277,21 +290,6 @@ const AuthModal = ({ isOpen, onClose }) => {
                   </button>
                 </div>
 
-                {/* {!isLogin && (
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-focus-within:text-red-500 transition-colors" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      placeholder="Confirm Password"
-                      required={!isLogin}
-                      className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:bg-white/10 transition-all duration-300 text-sm sm:text-base"
-                    />
-                  </div>
-                )} */}
-
                 {isLogin && (
                   <div className="text-right">
                     <button
@@ -373,12 +371,27 @@ const Navbar = () => {
     setIsAuthOpen(true)
   }
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('token')
-    sessionStorage.removeItem('user')
-    setUser(null)
-    setShowUserMenu(false)
-    navigate('/')
+  const handleLogout = async () => {
+    try {
+      // Optional: Call logout API endpoint if you have one
+      const token = sessionStorage.getItem('token')
+      if (token) {
+        await axios.post('localhost:3000/api/users/logout', {}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      }
+    } catch (err) {
+      console.error('Logout error:', err)
+    } finally {
+      // Clear session data regardless of API call result
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('user')
+      setUser(null)
+      setShowUserMenu(false)
+      navigate('/')
+    }
   }
 
   return (
@@ -418,12 +431,11 @@ const Navbar = () => {
                   <div className="relative">
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full transition-all duration-300 border border-white/20"
+                      className="flex items-center bg-white/10 hover:bg-white/20 backdrop-blur-sm p-1 cursor-pointer rounded-full transition-all duration-300 border border-white/20"
                     >
-                      <div className="w-8 h-8 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-semibold">
-                        {user.name?.charAt(0).toUpperCase()}
+                      <div className={`w-8 h-8 ${user.profileColor || 'bg-gradient-to-r from-red-600 to-red-700'} rounded-full flex items-center justify-center text-white font-semibold`}>
+                        {user.name?.substring(0, 2).toUpperCase()}
                       </div>
-                      <span className="text-white font-medium">{user.name}</span>
                     </button>
 
                     {showUserMenu && (
@@ -510,8 +522,8 @@ const Navbar = () => {
               {user ? (
                 <>
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-bold text-2xl">
-                      {user.name?.charAt(0).toUpperCase()}
+                    <div className={`w-16 h-16 ${user.profileColor || 'bg-gradient-to-r from-red-600 to-red-700'} rounded-full flex items-center justify-center text-white font-bold text-2xl`}>
+                      {user.name?.substring(0, 2).toUpperCase()}
                     </div>
                     <span className="text-white font-medium">{user.name}</span>
                   </div>

@@ -13,10 +13,13 @@ import BlurCircle from "../components/BlurCircle";
 import timeFormat from "../lib/timeFormat";
 import DateSelect from "../components/DateSelect";
 import MovieCard from "../components/MovieCard";
+import toast from "react-hot-toast";
 
 const MovieDetails = () => {
   const { id } = useParams();
   const [show, setShow] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
   const getShowData = async () => {
@@ -29,12 +32,24 @@ const MovieDetails = () => {
     }
   };
 
+  const handleFavoriteToggle = () => {
+    setIsFavorite(!isFavorite);
+    if (!isFavorite) {
+      toast("Added to Favorites");
+    } else {
+      toast("Removed from Favorites");
+    }
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   useEffect(() => {
     getShowData();
   }, [id]);
 
   return show ? (
-    <div className="w-full min-h-screen px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-12 md:py-20 lg:py-24">
+    <div className="w-full min-h-screen px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-12 md:py-20 lg:py-24 mt-10">
+
       <div className="w-full relative top-14 z-10">
         <BlurCircle top="-80px" left="280px" />
       </div>
@@ -46,7 +61,7 @@ const MovieDetails = () => {
               alt={show.movie.title}
               className="w-full rounded-2xl shadow-2xl transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-tto-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-t to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
         </div>
 
@@ -108,23 +123,34 @@ const MovieDetails = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <div className="flex gap-3 pt-4">
-              <button className="w-full flex items-center justify-center gap-2 cursor-pointer sm:w-auto px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:shadow-lg active:scale-95">
-                <PlayCircleIcon className="w-6 h-6" /> <p>Watch Trailer</p>
-              </button>
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <button className="flex items-center justify-center gap-2 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-base sm:text-lg rounded-xl transition-all duration-300 hover:shadow-lg active:scale-95">
+              <PlayCircleIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span>Watch Trailer</span>
+            </button>
 
-              <a
-                href="#dataSelect"
-                className="w-full cursor-pointer sm:w-auto px-8 py-4 bg-primary hover:bg-primary/90 text-slate-100 font-bold text-lg rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-primary/50 active:scale-95"
-              >
-                Buy Tickets
-              </a>
+            <a
+              href="#dataSelect"
+              className="flex items-center justify-center cursor-pointer px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-primary/90 text-slate-100 font-bold text-base sm:text-lg rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-primary/50 active:scale-95"
+            >
+              Buy Tickets
+            </a>
 
-              <button className="w-16 h-16 flex items-center justify-center cursor-pointer bg-slate-800 hover:bg-slate-700 text-white font-bold text-lg rounded-full transition-all duration-300 hover:shadow-lg active:scale-95">
-                <Heart className="w-6 h-6" />
-              </button>
-            </div>
+            <button
+              onClick={handleFavoriteToggle}
+              className="flex items-center justify-center cursor-pointer w-full sm:w-14 sm:h-14 px-6 py-3 sm:px-0 sm:py-0 bg-slate-800 hover:bg-slate-700 text-white font-bold text-base sm:text-lg rounded-xl sm:rounded-full transition-all duration-300 hover:shadow-lg active:scale-95 gap-2 sm:gap-0"
+            >
+              <Heart
+                className={`w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 ${
+                  isFavorite
+                    ? "fill-primary text-primary"
+                    : "fill-none text-white"
+                }`}
+              />
+              <span className="sm:hidden">
+                {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+              </span>
+            </button>
           </div>
 
           {show.movie.tagline && (

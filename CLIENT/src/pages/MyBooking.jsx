@@ -39,52 +39,46 @@ const MyBooking = () => {
   }
 
   return (
-    <div className="mt-32 px-4 md:px-10 min-h-screen">
+    <div className="mt-20 px-4 md:px-10 min-h-screen">
       <div className="w-full relative top-14 z-10">
-        <BlurCircle top="-80px" left="280px" />
+        <BlurCircle top="-80px" left="20px" />
         <BlurCircle top="340px" right="380px" />
       </div>
-      <h1 className="text-3xl font-bold mb-8 text-white flex gap-2 items-center"><span className="text-primary text-3xl"><Film /></span> My Bookings</h1>
+      <div className="mb-8 md:mb-12 flex items-center gap-3 pl-10">
+        <Film className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+          Now Showing
+        </h1>
+      </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col gap-6 pl-10">
         {bookings.map((booking, index) => (
           <div
             key={index}
-            className="bg-black rounded-xl shadow-lg hover:shadow-xl transition overflow-hidden border border-gray-500"
+            className="bg-black rounded-xl shadow-lg hover:shadow-xl transition overflow-hidden border border-gray-500 flex flex-col sm:flex-row w-full sm:w-2/3"
           >
             {/* Movie Image */}
             <img
               src={booking.show.movie.backdrop_path}
               alt={booking.show.movie.title}
-              className="h-52 w-full object-cover"
+              className="w-full sm:w-32 h-40 sm:h-auto object-cover flex-shrink-0"
             />
 
-            <div className="p-5">
-              {/* Movie Title */}
-              <h2 className="text-xl font-bold text-white">
-                {booking.show.movie.title}
-              </h2>
+            <div className="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                {/* Movie Title */}
+                <h2 className="text-lg font-bold text-white">
+                  {booking.show.movie.title}
+                </h2>
 
-              {/* Date & Time */}
-              <p className="text-sm text-gray-500 mt-1">
-                📅 {formatDateTime(booking.show.showDateTime)}
-              </p>
-
-              {/* Seats */}
-              <p className="mt-3 text-sm text-white">
-                <span className="font-semibold">Seats:</span>{" "}
-                {booking.bookedSeats.join(", ")}
-              </p>
-
-              {/* Price & Status */}
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-lg font-bold text-white">
-                  {currency}
-                  {booking.amount}
+                {/* Date & Time */}
+                <p className="text-xs text-gray-500 mt-1">
+                  📅 {formatDateTime(booking.show.showDateTime)}
                 </p>
 
+                {/* Status */}
                 <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full
+                  className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full
                   ${
                     booking.isPaid
                       ? "bg-green-100 text-green-700"
@@ -95,12 +89,27 @@ const MyBooking = () => {
                 </span>
               </div>
 
-              {/* Action */}
-              {!booking.isPaid && (
-                <button className="w-full mt-3 cursor-pointer bg-gradient-to-r from-green-500 to-green-600 text-slate-100 font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:from-green-400 hover:to-green-500 hover:shadow-lg hover:shadow-green-500/50 active:scale-95">
-                  Complete Payment
-                </button>
-              )}
+              {/* Right side - Seats, Price & Button */}
+              <div className="mt-4 space-y-2">
+                {/* Seats */}
+                <p className="text-sm text-white text-right">
+                  <span className="font-semibold">Seats:</span>{" "}
+                  {booking.bookedSeats.join(", ")}
+                </p>
+
+                {/* Price */}
+                <p className="text-lg font-bold text-white text-right">
+                  {currency}
+                  {booking.amount}
+                </p>
+
+                {/* Action */}
+                {!booking.isPaid && (
+                  <button className="w-full cursor-pointer bg-primary text-slate-100 font-bold py-2 px-4 rounded-xl transition-all duration-300 hover:bg-primary-dull hover:shadow-lg hover:shadow-primary/50 hover:scale-101 text-sm">
+                    Complete Payment
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}

@@ -6,9 +6,9 @@ import BlurCircle from "../components/BlurCircle";
 
 const Movie = () => {
   return dummyShowsData.length > 0 ? (
-    <div className="w-full min-h-screen px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-12 md:py-20 lg:py-24 relative">
-      {/* <BlurCircle top='150px' right='0px' />
-      <BlurCircle bottom='50px' left='50px' /> */}
+    <div className="w-full min-h-screen px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-12 md:py-20 lg:py-24 relative mt-10">
+      <BlurCircle top='150px' right='0px' />
+      <BlurCircle bottom='50px' left='50px' />
       <div className="w-full relative top-14 z-10">
         <BlurCircle top='0px' right='-80px'/>
       </div>

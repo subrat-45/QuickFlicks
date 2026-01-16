@@ -70,7 +70,7 @@ const DateSelect = ({ dateTime, id }) => {
                       key={date}
                       onClick={() => {
                         setSelectedDate(date);
-                        setSelectedTime(null);
+                        // setSelectedTime(null);
                       }}
                       className={`flex flex-col items-center gap-2 px-6 py-4 cursor-pointer rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 min-w-[100px] ${
                         selectedDate === date

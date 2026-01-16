@@ -8,44 +8,77 @@ const SeatLayout = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Date from URL params (you'll get this from useParams in actual implementation)
   const dateParam = "2025-07-24"; // Replace with actual date from params
-  
+
   // Mock show data (replace with actual API call or props)
   const showData = {
     movie: {
       title: "Dhurandhar",
       theater: "District by Zomato",
-      location: "RNS Inox 360°, Scheme Yari, Inayat Nagar, Cuttack, Odisha"
+      location: "RNS Inox 360°, Scheme Yari, Inayat Nagar, Cuttack, Odisha",
     },
-    date: "Thursday, 08 Jan"
+    date: "Thursday, 08 Jan",
   };
 
   // Seat categories with pricing
   const seatCategories = [
-    { name: "Royal Recliner", price: 350, rows: ["A"] },
-    { name: "Royal", price: 180, rows: ["B", "C", "D", "E"] },
-    { name: "Club", price: 180, rows: ["F", "G", "H", "I", "J", "K"] },
-    { name: "Executive", price: 180, rows: ["L", "M"] }
+    { name: "Executive", price: 180, rows: ["A"] },
+    { name: "Club", price: 210, rows: ["B", "C", "D", "E"] },
+    { name: "Royal", price: 340, rows: ["F", "G", "H", "I", "J", "K"] },
+    { name: "Royal Recliner", price: 450, rows: ["L", "M"] },
   ];
 
   // Generate seat layout data with occupied seats
   const seatLayout = {
-    A: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9], occupied: [] },
-    B: { seats: [1, 2, 3, 4, 5, 6, 7], occupied: [] },
-    C: { seats: [1, 2], occupied: [] },
-    D: { seats: [1, 2, 3, 4, 5, 6, 7], occupied: [] },
-    E: { seats: [1, 2, 3, 4, 5, 6, 7], occupied: [] },
-    F: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    G: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    H: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    I: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    J: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    K: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    L: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] },
-    M: { seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], occupied: [] }
+    A: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    B: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    C: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    D: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    E: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    F: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    G: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    H: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    I: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    J: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    K: {
+      seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      occupied: [],
+    },
+    L: { seats: [1, 2, 3, 4, 5, 6, 7, 8], occupied: [] },
+    M: { seats: [1, 2, 3, 4, 5, 6, 7, 8], occupied: [] },
   };
 
   // Format time from ISO string to readable format
@@ -53,32 +86,41 @@ const SeatLayout = () => {
     const date = new Date(isoString);
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const ampm = hours >= 12 ? "PM" : "AM";
     const formattedHours = hours % 12 || 12;
-    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, "0");
     return `${formattedHours}:${formattedMinutes} ${ampm}`;
   };
-  
+
   // Get showtimes for the selected date from dummyDateTimeData
   // In real implementation, you'll import dummyDateTimeData and use the date from params
   const getShowtimesForDate = (date) => {
     // Mock data - replace with actual dummyDateTimeData[date]
     const mockDateTimeData = {
       "2025-07-24": [
-        { "time": "2025-07-24T01:00:00.000Z", "showId": "68395b407f6329be2bb45bd1" },
-        { "time": "2025-07-24T03:00:00.000Z", "showId": "68395b407f6329be2bb45bd2" },
-        { "time": "2025-07-24T05:00:00.000Z", "showId": "68395b407f6329be2bb45bd3" }
-      ]
+        {
+          time: "2025-07-24T01:00:00.000Z",
+          showId: "68395b407f6329be2bb45bd1",
+        },
+        {
+          time: "2025-07-24T03:00:00.000Z",
+          showId: "68395b407f6329be2bb45bd2",
+        },
+        {
+          time: "2025-07-24T05:00:00.000Z",
+          showId: "68395b407f6329be2bb45bd3",
+        },
+      ],
     };
-    
+
     return mockDateTimeData[date] || [];
   };
-  
+
   // Get formatted showtimes
-  const showtimes = getShowtimesForDate(dateParam).map(item => ({
+  const showtimes = getShowtimesForDate(dateParam).map((item) => ({
     time: formatTime(item.time),
     showId: item.showId,
-    available: "Available"
+    available: "Available",
   }));
 
   // Simulate loading
@@ -89,17 +131,18 @@ const SeatLayout = () => {
   // Handle seat selection/deselection
   const handleSeatClick = (row, seatNumber) => {
     const seatId = `${row}${seatNumber}`;
-    
+
     // Check if seat is already occupied
     if (seatLayout[row].occupied.includes(seatNumber)) {
       return;
     }
 
     // Toggle seat selection
-    setSelectedSeats((prev) =>
-      prev.includes(seatId)
-        ? prev.filter((seat) => seat !== seatId) // Deselect seat
-        : [...prev, seatId] // Select seat
+    setSelectedSeats(
+      (prev) =>
+        prev.includes(seatId)
+          ? prev.filter((seat) => seat !== seatId) // Deselect seat
+          : [...prev, seatId] // Select seat
     );
   };
 
@@ -131,17 +174,17 @@ const SeatLayout = () => {
       toast("Please select a show time");
       return;
     }
-    
+
     // Log booking details (replace with actual booking logic)
     console.log("Booking Details:", {
       movie: showData.movie.title,
       seats: selectedSeats,
       time: selectedTime,
       total: calculateTotal(),
-      date: showData.date
+      date: showData.date,
     });
 
-    navigate('/my-booking')
+    navigate("/my-booking");
   };
 
   // Loading state
@@ -178,7 +221,7 @@ const SeatLayout = () => {
             <Clock className="w-5 h-5 text-primary" />
             <h2 className="text-4xl font-semibold">Select Show Time</h2>
           </div>
-          
+
           {/* Show time buttons */}
           <div className="flex flex-wrap gap-3">
             {showtimes.length > 0 ? (
@@ -193,32 +236,52 @@ const SeatLayout = () => {
                   }`}
                 >
                   <div className="text-base">{showtime.time}</div>
-                  <div className="text-xs text-gray-400 mt-1">{showtime.available}</div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    {showtime.available}
+                  </div>
                 </button>
               ))
             ) : (
-              <p className="text-gray-400">No showtimes available for this date</p>
+              <p className="text-gray-400">
+                No showtimes available for this date
+              </p>
             )}
           </div>
         </div>
 
         {/* Screen Visualization Section with curved design */}
         <div className="mb-12">
-          <div className="relative">
-            <div className="w-full max-w-4xl mx-auto">
+          <div className="flex flex-col items-center">
+            <div className="w-full max-w-7xl mx-auto">
               {/* Curved screen representation */}
               <div className="relative">
-                <svg viewBox="0 0 800 60" className="w-full h-auto mb-4" preserveAspectRatio="xMidYMid meet">
+                <svg
+                  viewBox="0 0 800 60"
+                  className="w-full h-auto mb-4"
+                  preserveAspectRatio="xMidYMid meet"
+                >
                   <defs>
-                    <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{stopColor: '#9ca3af', stopOpacity: 0.8}} />
-                      <stop offset="100%" style={{stopColor: '#374151', stopOpacity: 0.2}} />
+                    <linearGradient
+                      id="screenGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop
+                        offset="0%"
+                        style={{ stopColor: "#9ca3af", stopOpacity: 0.8 }}
+                      />
+                      <stop
+                        offset="100%"
+                        style={{ stopColor: "#374151", stopOpacity: 0.2 }}
+                      />
                     </linearGradient>
                   </defs>
-                  <path 
-                    d="M 50 50 Q 400 10, 750 50" 
-                    stroke="url(#screenGradient)" 
-                    strokeWidth="4" 
+                  <path
+                    d="M 50 50 Q 400 10, 750 50"
+                    stroke="url(#screenGradient)"
+                    strokeWidth="4"
                     fill="none"
                     className="drop-shadow-lg"
                   />
@@ -234,26 +297,23 @@ const SeatLayout = () => {
         {/* Seat Layout Section with Legend in corner */}
         <div className="mb-12 relative">
           {/* Legend in top-right corner */}
-          <div className="absolute top-0 right-0 bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 shadow-xl border border-gray-700 z-10">
+          <div className="hidden lg:block absolute -top-25 -right-25 bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 shadow-xl border border-gray-700 z-10">
             <div className="flex items-center gap-2 mb-3">
               <Info className="w-4 h-4 text-primary" />
               <h3 className="font-semibold text-sm">Legend</h3>
             </div>
             
             <div className="space-y-2">
-              {/* Available seat indicator */}
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-gray-800 border border-gray-600 rounded-t-lg flex-shrink-0"></div>
                 <span className="text-xs text-gray-300">Available</span>
               </div>
               
-              {/* Selected seat indicator */}
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-blue-500 rounded-t-lg flex-shrink-0"></div>
                 <span className="text-xs text-gray-300">Selected</span>
               </div>
               
-              {/* Occupied seat indicator */}
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-gray-700 opacity-50 rounded-t-lg flex-shrink-0"></div>
                 <span className="text-xs text-gray-300">Occupied</span>
@@ -262,40 +322,59 @@ const SeatLayout = () => {
           </div>
 
           {/* Seat grid */}
-          <div className="space-y-6 pr-0 md:pr-40">
+          <div className="space-y-6">
             {/* Render seats by category */}
             {seatCategories.map((category, catIndex) => (
               <div key={catIndex}>
                 {/* Category Header with price */}
                 <div className="flex items-center justify-between mb-3 px-2">
                   <h3 className="text-sm font-semibold text-gray-300">
-                    {category.name} - ₹{category.price}
+                    {category.name} -{" "}
+                    <span className="text-primary">₹{category.price}</span>
                   </h3>
                 </div>
 
                 {/* Seat Rows for this category */}
                 <div className="space-y-3">
                   {category.rows.map((row) => (
-                    <div key={row} className="flex items-center justify-center gap-2">
+                    <div
+                      key={row}
+                      className="flex items-center justify-center gap-2"
+                    >
                       {/* Row Label (A, B, C, etc.) */}
                       <div className="w-8 text-center font-semibold text-gray-400">
                         {row}
                       </div>
 
                       {/* Individual Seats with rounded tops */}
-                      <div className="flex flex-wrap justify-center gap-2 flex-1 max-w-4xl">
-                        {seatLayout[row]?.seats.map((seatNumber) => {
+                      <div className="w-full flex justify-center flex-1 p-1 max-w-4xl overflow-x-auto">
+                        {seatLayout[row]?.seats.map((seatNumber, index) => {
                           const seatId = `${row}${seatNumber}`;
-                          const isOccupied = seatLayout[row].occupied.includes(seatNumber);
+                          const isOccupied =
+                            seatLayout[row].occupied.includes(seatNumber);
                           const isSelected = selectedSeats.includes(seatId);
+
+                          const isGroupEnd =
+                            (index + 1) % 5 === 0 &&
+                            index !== seatLayout[row].seats.length - 1;
 
                           return (
                             <button
                               key={seatNumber}
                               onClick={() => handleSeatClick(row, seatNumber)}
                               disabled={isOccupied}
-                              title={isOccupied ? "Occupied" : isSelected ? "Selected" : "Available"}
-                              className={`w-8 h-8 md:w-10 md:h-10 rounded-t-xl text-xs font-medium transition-all cursor-pointer duration-200 ${
+                              title={
+                                isOccupied
+                                  ? "Occupied"
+                                  : isSelected
+                                  ? "Selected"
+                                  : "Available"
+                              }
+                              style={{
+                                marginRight: isGroupEnd ? "50px" : "15px",
+                                marginBottom: "8px",
+                              }}
+                              className={`w-[20px] h-[20px] md:w-10 md:h-10 rounded-t-xl text-xs font-medium transition-all cursor-pointer duration-200 ${
                                 isOccupied
                                   ? "bg-gray-700 cursor-not-allowed opacity-50"
                                   : isSelected
@@ -309,8 +388,6 @@ const SeatLayout = () => {
                         })}
                       </div>
 
-                      {/* Right spacer for visual symmetry */}
-                      <div className="w-8"></div>
                     </div>
                   ))}
                 </div>
@@ -333,10 +410,10 @@ const SeatLayout = () => {
                   {selectedSeats.join(", ")}
                 </p>
               </div>
-              
+
               {/* Vertical divider for desktop */}
               <div className="hidden md:block w-px h-12 bg-gray-700"></div>
-              
+
               {/* Total Amount Display */}
               <div className="text-center md:text-left">
                 <p className="text-gray-400 text-sm">Total Amount</p>

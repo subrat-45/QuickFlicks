@@ -14,6 +14,7 @@ import timeFormat from "../lib/timeFormat";
 import DateSelect from "../components/DateSelect";
 import MovieCard from "../components/MovieCard";
 import toast from "react-hot-toast";
+import IndividualTrailer from "../components/IndiviualTrailer";
 
 const MovieDetails = () => {
   const { id } = useParams();
@@ -49,7 +50,6 @@ const MovieDetails = () => {
 
   return show ? (
     <div className="w-full min-h-screen px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 py-12 md:py-20 lg:py-24 mt-10">
-
       <div className="w-full relative top-14 z-10">
         <BlurCircle top="-80px" left="280px" />
       </div>
@@ -124,10 +124,12 @@ const MovieDetails = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <button className="flex items-center justify-center gap-2 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-base sm:text-lg rounded-xl transition-all duration-300 hover:shadow-lg active:scale-95">
-              <PlayCircleIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span>Watch Trailer</span>
-            </button>
+            <a href="#trailer">
+              <button className="flex items-center justify-center gap-2 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-base sm:text-lg rounded-xl transition-all duration-300 hover:shadow-lg active:scale-95">
+                <PlayCircleIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span>Watch Trailer</span>
+              </button>
+            </a>
 
             <a
               href="#dataSelect"
@@ -199,7 +201,11 @@ const MovieDetails = () => {
 
       <DateSelect dateTime={show.dateTime} id={id} />
 
-      <div>
+      <div className="mt-16">
+        <IndividualTrailer movieID={show.movie._id} movieTitle={show.movie.title} />
+      </div>
+
+      <div className="mt-20">
         <h2 className="text-2xl md:text-3xl font-bold text-white">
           You May Also Like
         </h2>

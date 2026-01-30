@@ -202,19 +202,16 @@ const SeatLayout = () => {
   return (
     <div className="min-h-screen bg-black text-white pb-32">
       {/* Header Section - Movie Info */}
-      {/* <div className="bg-gray-800 border-b border-gray-700 px-4 py-6 md:px-8 lg:px-16">
+      <div className="bg-transparent px-4 py-6 md:px-8 lg:px-16 mt-16">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">{showData.movie.title}</h1>
           <p className="text-gray-400 text-sm md:text-base">
-            {showData.movie.theater} | {showData.date}
-          </p>
-          <p className="text-gray-500 text-xs md:text-sm mt-1">
-            {showData.movie.location}
+            QuickFlicks | {showData.date}
           </p>
         </div>
-      </div> */}
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 md:px-8 lg:px-16 mt-20">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:px-8 lg:px-16 mt-10">
         {/* Show Time Selection Section */}
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-4">

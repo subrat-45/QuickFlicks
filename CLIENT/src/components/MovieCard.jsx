@@ -32,7 +32,7 @@ const MovieCard = ({movie}) => {
                     <span className="w-1 h-1 rounded-full bg-slate-600"></span>
                     <span className="line-clamp-1">{movie.genres.slice(0,2).map(gener => gener.name).join(" | ")}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-600"></span>
-                    <span>{timeFormat(movie.runtime)}</span>
+                    <span className='w-18'>{timeFormat(movie.runtime)}</span>
                 </div>
                 
                 <button 

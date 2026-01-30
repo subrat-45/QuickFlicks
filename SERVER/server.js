@@ -4,6 +4,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './Config/db.js';
 import userRoutes from './Routes/userRoutes.js';
+import showRoutes from './Routes/showRoute.js';
+// import aiRoutes from './Routes/aiRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +18,8 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/shows', showRoutes);
+// app.use('/api/ai', aiRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the QuickFlicks Server!');

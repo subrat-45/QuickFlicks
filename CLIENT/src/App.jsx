@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from './components/Navbar'
 import Footer from "./components/Footer"
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Movie from './pages/Movie'
 import MovieDetails from './pages/MovieDetails'
@@ -14,6 +14,8 @@ import DashBoard from './pages/admin/DashBoard'
 import ListBooking from './pages/admin/ListBooking'
 import ListShows from './pages/admin/ListShows'
 import AddShows from './pages/admin/AddShows'
+import SearchMovie from './pages/SearchMovie'
+// import Jarvis from './pages/Jarvis';
 
 const App = () => {
   const location = useLocation()
@@ -32,6 +34,8 @@ const App = () => {
         <Route path='/movies/:id/:date' element={<SeatLayout />} />
         <Route path='/my-booking' element={<MyBooking />} />
         <Route path='/favorites' element={<Favorite />} />
+        <Route path='/search' element={<SearchMovie />} />
+        {/* <Route path='/jarvis' element={<Jarvis />} /> */}
         <Route path='/admin/*' element={<Layout />}>
           <Route index element={<DashBoard />} />
           <Route path='list-booking' element={<ListBooking />} />
@@ -44,5 +48,11 @@ const App = () => {
     </>
   )
 }
+
+// function JarvisWrapper() {
+//   const navigate = useNavigate();
+  
+//   return <Jarvis onNavigate={(path) => navigate(path)} />;
+// }
 
 export default App

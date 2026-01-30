@@ -1,136 +1,160 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { assets } from '../assets/assets'
-import { Menu, Search, TicketPlus, X, Mail, Lock, User, Eye, EyeOff, Film, Ticket, Star, Clock, LogOut } from "lucide-react"
-import axios from 'axios'
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { assets } from "../assets/assets";
+import {
+  Menu,
+  Search,
+  TicketPlus,
+  X,
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  Film,
+  Ticket,
+  Star,
+  Clock,
+  LogOut,
+  Bot,
+  BotIcon,
+} from "lucide-react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 // Generate random color for profile picture
 const getRandomColor = () => {
   const colors = [
-    'bg-gradient-to-r from-red-500 to-pink-500',
-    'bg-gradient-to-r from-blue-500 to-cyan-500',
-    'bg-gradient-to-r from-green-500 to-emerald-500',
-    'bg-gradient-to-r from-purple-500 to-indigo-500',
-    'bg-gradient-to-r from-orange-500 to-amber-500',
-    'bg-gradient-to-r from-teal-500 to-green-500',
-    'bg-gradient-to-r from-pink-500 to-rose-500',
-    'bg-gradient-to-r from-indigo-500 to-blue-500',
-  ]
-  return colors[Math.floor(Math.random() * colors.length)]
-}
+    "bg-gradient-to-r from-red-500 to-pink-500",
+    "bg-gradient-to-r from-blue-500 to-cyan-500",
+    "bg-gradient-to-r from-green-500 to-emerald-500",
+    "bg-gradient-to-r from-purple-500 to-indigo-500",
+    "bg-gradient-to-r from-orange-500 to-amber-500",
+    "bg-gradient-to-r from-teal-500 to-green-500",
+    "bg-gradient-to-r from-pink-500 to-rose-500",
+    "bg-gradient-to-r from-indigo-500 to-blue-500",
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
 
 // Auth Modal Component with Split Screen Design
 const AuthModal = ({ isOpen, onClose }) => {
-  const [isLogin, setIsLogin] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  })
+    name: "",
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    setError('')
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
+  };
 
   const validateForm = () => {
     if (!formData.email) {
-      setError('Please fill in all required fields')
-      return false
+      setError("Please fill in all required fields");
+      return false;
     }
-    
+
     if (!isLogin) {
       if (!formData.name) {
-        setError('Please enter your name')
-        return false
+        setError("Please enter your name");
+        return false;
       }
     }
-    
-    return true
-  }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  setLoading(true);
-  setError('');
+    setLoading(true);
+    setError("");
 
-  try {
-    const endpoint = isLogin
-      ? `${import.meta.env.VITE_API_URL}/api/users/login`
-      : `${import.meta.env.VITE_API_URL}/api/users/register`;
+    try {
+      const endpoint = isLogin
+        ? `${import.meta.env.VITE_API_URL}/api/users/login`
+        : `${import.meta.env.VITE_API_URL}/api/users/register`;
 
-    const payload = isLogin
-      ? { email: formData.email, password: formData.password }
-      : { name: formData.name, email: formData.email, password: formData.password };
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          };
 
-    const response = await axios.post(endpoint, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-    });
+      const response = await axios.post(endpoint, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
 
-    const data = response.data;
+      const data = response.data;
 
-    const userData = {
-      ...data.user,
-      profileColor: getRandomColor(),
-    };
+      const userData = {
+        ...data.user,
+        profileColor: getRandomColor(),
+      };
 
-    sessionStorage.setItem('token', data.token);
-    sessionStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(userData));
 
-    onClose();
-    window.location.reload();
+      isLogin ? toast.success("Login successful!") : toast.success("Registration successful!");
 
-  } catch (err) {
-    setError(
-      err.response?.data?.message ||
-      err.message ||
-      'An error occurred. Please try again.'
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
+      onClose();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "An error occurred. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleLogin = () => {
     // Redirect to your backend Google OAuth endpoint
-    window.location.href = '/api/auth/google'
-  }
+    window.location.href = "/api/auth/google";
+  };
 
   const switchMode = () => {
-    setIsLogin(!isLogin)
-    setFormData({ name: '', email: '', password: ''})
-    setError('')
-  }
+    setIsLogin(!isLogin);
+    setFormData({ name: "", email: "", password: "" });
+    setError("");
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md"
       onClick={onClose}
     >
-      <div 
+      <div
         className="relative w-full max-w-5xl h-[90vh] sm:h-[600px] transform transition-all duration-500 ease-out"
         onClick={(e) => e.stopPropagation()}
       >
@@ -142,13 +166,14 @@ const AuthModal = ({ isOpen, onClose }) => {
         </button>
 
         <div className="relative w-full h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl sm:rounded-2xl shadow-2xl border border-white/10 overflow-hidden flex flex-col md:flex-row">
-          
           {/* Promotional Content */}
-          <div className={`absolute top-0 h-full w-full md:w-1/2 bg-primary transition-all duration-700 ease-in-out overflow-hidden ${
-            isLogin 
-              ? 'left-0 md:left-0 rounded-tl-xl sm:rounded-tl-2xl md:rounded-l-2xl md:rounded-r-full' 
-              : 'left-0 md:left-1/2 rounded-tr-xl sm:rounded-tr-2xl md:rounded-r-2xl md:rounded-l-full'
-          }`}>
+          <div
+            className={`absolute top-0 h-full w-full md:w-1/2 bg-primary transition-all duration-700 ease-in-out overflow-hidden ${
+              isLogin
+                ? "left-0 md:left-0 rounded-tl-xl sm:rounded-tl-2xl md:rounded-l-2xl md:rounded-r-full"
+                : "left-0 md:left-1/2 rounded-tr-xl sm:rounded-tr-2xl md:rounded-r-2xl md:rounded-l-full"
+            }`}
+          >
             <div className="relative h-full flex flex-col items-center justify-center p-4 sm:p-8 text-white overflow-hidden">
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-20 h-20 sm:w-32 sm:h-32 bg-white rounded-full blur-3xl animate-pulse"></div>
@@ -161,9 +186,12 @@ const AuthModal = ({ isOpen, onClose }) => {
                     <div className="mb-4">
                       <Ticket className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-4 animate-bounce" />
                     </div>
-                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">New Here?</h2>
+                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
+                      New Here?
+                    </h2>
                     <p className="text-sm sm:text-lg mb-4 sm:mb-6 text-white/90 px-4">
-                      Join thousands of movie lovers! Create your account and start booking amazing experiences.
+                      Join thousands of movie lovers! Create your account and
+                      start booking amazing experiences.
                     </p>
                     <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
                       <div className="flex items-center gap-2 sm:gap-3 justify-center text-sm sm:text-base">
@@ -191,9 +219,12 @@ const AuthModal = ({ isOpen, onClose }) => {
                     <div className="mb-4">
                       <Film className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-4 animate-bounce" />
                     </div>
-                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">Welcome Back!</h2>
+                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
+                      Welcome Back!
+                    </h2>
                     <p className="text-sm sm:text-lg mb-4 sm:mb-6 text-white/90 px-4">
-                      Ready for your next movie adventure? Sign in to continue where you left off.
+                      Ready for your next movie adventure? Sign in to continue
+                      where you left off.
                     </p>
                     <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
                       <div className="flex items-center gap-2 sm:gap-3 justify-center text-sm sm:text-base">
@@ -222,26 +253,30 @@ const AuthModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Form Section */}
-          <div className={`absolute top-0 h-full w-full md:w-1/2 bg-black transition-all duration-700 ease-in-out ${
-            isLogin ? 'left-0 md:left-1/2' : 'left-0 md:left-0'
-          }`}>
+          <div
+            className={`absolute top-0 h-full w-full md:w-1/2 bg-black transition-all duration-700 ease-in-out ${
+              isLogin ? "left-0 md:left-1/2" : "left-0 md:left-0"
+            }`}
+          >
             <div className="h-full overflow-y-auto p-2 sm:p-6 md:p-10 flex flex-col justify-center">
               <div className="text-center mb-4 sm:mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1 sm:mb-2">
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                  {isLogin ? "Sign In" : "Create Account"}
                 </h2>
                 <p className="text-gray-400 text-sm sm:text-base">
-                  {isLogin ? 'Enter your credentials to continue' : 'Fill in your details to get started'}
+                  {isLogin
+                    ? "Enter your credentials to continue"
+                    : "Fill in your details to get started"}
                 </p>
               </div>
 
               {error && (
                 <div className="mb-4 p-2 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm text-center">
-                  {error}
+                  Somting went wrong, please try again later.
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className='flex flex-col gap-2'>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                 {!isLogin && (
                   <div className="relative group">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-focus-within:text-red-500 transition-colors" />
@@ -286,7 +321,11 @@ const AuthModal = ({ isOpen, onClose }) => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                    ) : (
+                      <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                    )}
                   </button>
                 </div>
 
@@ -306,7 +345,11 @@ const AuthModal = ({ isOpen, onClose }) => {
                   disabled={loading}
                   className="w-full cursor-pointer bg-primary hover:bg-primary-dull disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white py-2.5 sm:py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
                 >
-                  {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
+                  {loading
+                    ? "Processing..."
+                    : isLogin
+                      ? "Sign In"
+                      : "Create Account"}
                 </button>
 
                 <div className="relative my-4 sm:my-6">
@@ -323,18 +366,28 @@ const AuthModal = ({ isOpen, onClose }) => {
                   onClick={handleGoogleLogin}
                   className="w-full cursor-pointer flex items-center justify-center gap-3 py-2.5 sm:py-3 border border-white/10 rounded-lg text-white hover:bg-white/5 transition-all duration-300 hover:scale-105"
                 >
-                  <img src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo.png" alt="" className='rounded-full' height={'20px'}  width={'20px'}/>
-                  <span className="text-sm sm:text-base">Continue with Google</span>
+                  <img
+                    src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo.png"
+                    alt=""
+                    className="rounded-full"
+                    height={"20px"}
+                    width={"20px"}
+                  />
+                  <span className="text-sm sm:text-base">
+                    Continue with Google
+                  </span>
                 </button>
 
                 <p className="text-center text-gray-400 text-xs sm:text-sm mt-4 sm:mt-6">
-                  {isLogin ? "Don't have an account? " : "Already have an account? "}
+                  {isLogin
+                    ? "Don't have an account? "
+                    : "Already have an account? "}
                   <button
                     type="button"
                     onClick={switchMode}
                     className="text-red-400 hover:text-red-300 font-semibold transition-colors"
                   >
-                    {isLogin ? 'Sign Up' : 'Sign In'}
+                    {isLogin ? "Sign Up" : "Sign In"}
                   </button>
                 </p>
               </form>
@@ -343,208 +396,235 @@ const AuthModal = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isAuthOpen, setIsAuthOpen] = useState(false)
-  const [user, setUser] = useState(null)
-  const [showUserMenu, setShowUserMenu] = useState(false)
-  const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const handleActivateJarvis = () => {
+    setShowUserMenu(false);
+  }
 
   useEffect(() => {
     // Check if user is logged in on component mount
-    const token = sessionStorage.getItem('token')
-    const userData = sessionStorage.getItem('user')
-    
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
     if (token && userData) {
-      setUser(JSON.parse(userData))
+      setUser(JSON.parse(userData));
     }
-  }, [])
+  }, []);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const handleSignIn = () => {
-    setIsAuthOpen(true)
-  }
+    setIsAuthOpen(true);
+  };
 
   const handleLogout = async () => {
     try {
-      // Optional: Call logout API endpoint if you have one
-      const token = sessionStorage.getItem('token')
-      if (token) {
-        await axios.post('localhost:3000/api/users/logout', {}, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-      }
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      toast.success("Logged out successfully!");
     } catch (err) {
-      console.error('Logout error:', err)
+      console.error("Logout error:", err);
     } finally {
       // Clear session data regardless of API call result
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('user')
-      setUser(null)
-      setShowUserMenu(false)
-      navigate('/')
+      setUser(null);
+      setShowUserMenu(false);
+      navigate("/");
     }
-  }
+  };
 
   return (
     <>
-      <nav className='w-full fixed top-0 left-0 z-50'>
-        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex items-center justify-between h-20'>
-            
-            <Link to='/' className='flex-shrink-0 z-50 flex items-center py-4'>
-              <img src={assets.logo} alt="Website Logo" className='h-24 w-auto object-contain' />
+      <nav className="w-full fixed top-0 left-0 z-50">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <Link to="/" className="flex-shrink-0 z-50 flex items-center py-4">
+              <img
+                src={assets.logo}
+                alt="Website Logo"
+                className="h-48 w-48 object-contain"
+              />
             </Link>
 
-            <div className='hidden md:flex items-center backdrop-blur-xl bg-white/10 rounded-full px-6 py-2.5 border border-white/20 shadow-lg gap-1 hover:scale-101 duration-300'>
-              <Link to='/' onClick={scrollTo(0, 0)} className='text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
+            <div className="hidden md:flex items-center backdrop-blur-xl bg-white/10 rounded-full px-6 py-2.5 border border-white/20 shadow-lg gap-1 hover:scale-101 duration-300">
+              <Link
+                to="/"
+                onClick={scrollTo(0, 0)}
+                className="text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10"
+              >
                 Home
               </Link>
-              <Link to='/movies' onClick={scrollTo(0, 0)} className='text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
+              <Link
+                to="/movies"
+                onClick={scrollTo(0, 0)}
+                className="text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10"
+              >
                 Movies
               </Link>
-              <Link to='/releases' onClick={scrollTo(0, 0)} className='text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
+              <Link
+                to="/releases"
+                onClick={scrollTo(0, 0)}
+                className="text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10"
+              >
                 Releases
               </Link>
-              <Link to='/favorites' onClick={scrollTo(0, 0)} className='text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
+              <Link
+                to="/favorites"
+                onClick={scrollTo(0, 0)}
+                className="text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10"
+              >
                 Favorites
               </Link>
-              <Link to='/my-booking' onClick={scrollTo(0, 0)} className='text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10'>
+              <Link
+                to="/my-booking"
+                onClick={scrollTo(0, 0)}
+                className="text-white hover:text-red-400 transition-all duration-300 font-medium px-5 py-2 rounded-full hover:bg-white/10"
+              >
                 My Bookings
               </Link>
             </div>
 
-            <div className='hidden md:flex items-center gap-3 flex-shrink-0'>
-              <button className='text-white cursor-pointer hover:text-red-400 transition-all duration-300 p-2.5 rounded-full hover:bg-white/10 backdrop-blur-sm'>
-                <Search className='w-5 h-5' />
+            <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+              <button
+                onClick={() => navigate("/search")}
+                className="text-white cursor-pointer hover:text-red-400 transition-all duration-300 p-2.5 rounded-full hover:bg-white/10 backdrop-blur-sm"
+              >
+                <Search className="w-5 h-5" />
               </button>
-              {
-                user ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="flex items-center bg-white/10 hover:bg-white/20 backdrop-blur-sm p-1 cursor-pointer rounded-full transition-all duration-300 border border-white/20"
-                    >
-                      <div className={`w-8 h-8 ${user.profileColor || 'bg-gradient-to-r from-red-600 to-red-700'} rounded-full flex items-center justify-center text-white font-semibold`}>
-                        {user.name?.substring(0, 2).toUpperCase()}
-                      </div>
-                    </button>
-
-                    {showUserMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-white/10 rounded-lg shadow-xl overflow-hidden">
-                        <button
-                          onClick={() => {
-                            setShowUserMenu(false)
-                            navigate('/my-booking')
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-all duration-300"
-                        >
-                          <TicketPlus className="w-5 h-5" />
-                          <span>My Bookings</span>
-                        </button>
-                        <button
-                          onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-white/10 transition-all duration-300 border-t border-white/10"
-                        >
-                          <LogOut className="w-5 h-5" />
-                          <span>Logout</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <button 
-                    onClick={handleSignIn} 
-                    className='bg-primary cursor-pointer hover:bg-primary-dull text-white px-7 py-2.5 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105'
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center bg-white/10 hover:bg-white/20 backdrop-blur-sm p-1 cursor-pointer rounded-full transition-all duration-300 border border-white/20"
                   >
-                    Sign in
+                    <div
+                      className={`w-8 h-8 ${user.profileColor || "bg-gradient-to-r from-red-600 to-red-700"} rounded-full flex items-center justify-center text-white font-semibold`}
+                    >
+                      {user.name?.substring(0, 2).toUpperCase()}
+                    </div>
                   </button>
-                )
-              }
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-white/10 rounded-lg shadow-xl overflow-hidden">
+                      <button
+                        onClick={handleActivateJarvis}
+                        className="w-full cursor-pointer flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-all duration-300"
+                      >
+                        <BotIcon className="w-5 h-5 text-blue-400" />
+                        <span>Activate Jarvis</span>
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full cursor-pointer flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-white/10 transition-all duration-300 border-t border-white/10"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={handleSignIn}
+                  className="bg-primary cursor-pointer hover:bg-primary-dull text-white px-7 py-2.5 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  Sign in
+                </button>
+              )}
             </div>
 
-            <button 
+            <button
               onClick={toggleMenu}
-              className='md:hidden cursor-pointer text-white z-50 p-2 hover:bg-white/10 rounded-lg transition-all duration-300'
+              className="md:hidden cursor-pointer text-white z-50 p-2 hover:bg-white/10 rounded-lg transition-all duration-300"
             >
-              {isMenuOpen ? <X className='w-6 h-6 cursor-pointer' /> : <Menu className='w-6 h-6' />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6 cursor-pointer" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
 
-        <div className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-2xl transition-all duration-300 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-          <div className='flex flex-col items-center justify-center h-full space-y-6'>
-            <Link 
-              to='/' 
+        <div
+          className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-2xl transition-all duration-300 ${isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+        >
+          <div className="flex flex-col items-center justify-center h-full space-y-6">
+            <Link
+              to="/"
               onClick={toggleMenu}
-              className='text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10'
+              className="text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10"
             >
               Home
             </Link>
-            <Link 
-              to='/movies' 
+            <Link
+              to="/movies"
               onClick={toggleMenu}
-              className='text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10'
+              className="text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10"
             >
               Movies
             </Link>
-            <Link 
-              to='/releases' 
+            <Link
+              to="/releases"
               onClick={toggleMenu}
-              className='text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10'
+              className="text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10"
             >
               Releases
             </Link>
-            <Link 
-              to='/favorites' 
+            <Link
+              to="/favorites"
               onClick={toggleMenu}
-              className='text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10'
+              className="text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10"
             >
               Favorites
             </Link>
-            <Link 
-              to='/my-booking' 
+            <Link
+              to="/my-booking"
               onClick={toggleMenu}
-              className='text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10'
+              className="text-white text-2xl hover:text-red-400 transition-all duration-300 font-medium px-8 py-3 rounded-full hover:bg-white/10"
             >
               My Bookings
             </Link>
-            
-            <div className='flex flex-col items-center gap-4 mt-8'>
+
+            <div className="flex flex-col items-center gap-4 mt-8">
               {user ? (
                 <>
                   <div className="flex flex-col items-center gap-2">
-                    <div className={`w-16 h-16 ${user.profileColor || 'bg-gradient-to-r from-red-600 to-red-700'} rounded-full flex items-center justify-center text-white font-bold text-2xl`}>
+                    <div
+                      className={`w-16 h-16 ${user.profileColor || "bg-gradient-to-r from-red-600 to-red-700"} rounded-full flex items-center justify-center text-white font-bold text-2xl`}
+                    >
                       {user.name?.substring(0, 2).toUpperCase()}
                     </div>
                     <span className="text-white font-medium">{user.name}</span>
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
-                      toggleMenu()
-                      handleLogout()
+                      toggleMenu();
+                      handleLogout();
                     }}
-                    className='flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-10 py-3 rounded-full transition-all duration-300 font-medium shadow-lg hover:scale-105'
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-10 py-3 rounded-full transition-all duration-300 font-medium shadow-lg hover:scale-105"
                   >
                     <LogOut className="w-5 h-5" />
                     Logout
                   </button>
                 </>
               ) : (
-                <button 
+                <button
                   onClick={() => {
-                    toggleMenu()
-                    handleSignIn()
+                    toggleMenu();
+                    handleSignIn();
                   }}
-                  className='bg-gradient-to-r cursor-pointer from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-3 rounded-full transition-all duration-300 font-medium shadow-lg hover:scale-105'
+                  className="bg-gradient-to-r cursor-pointer from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-3 rounded-full transition-all duration-300 font-medium shadow-lg hover:scale-105"
                 >
                   Sign in
                 </button>
@@ -557,7 +637,7 @@ const Navbar = () => {
       {/* Custom Auth Modal */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

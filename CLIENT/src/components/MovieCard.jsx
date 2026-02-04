@@ -7,14 +7,15 @@ const MovieCard = ({movie}) => {
     const navigate = useNavigate()
     
     return (
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer">
-            <div className="relative aspect-[16/10] overflow-hidden">
+        <div className="group relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 to-slate-800 shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer">
+            <div className="relative aspect-16/10 overflow-hidden">
                 <img 
                     src={movie.backdrop_path} 
                     alt={movie.title}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-pointer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-80"></div>
+                <div className="absolute inset-0 bg-linear
+                -to-t from-slate-900 via-slate-900/40 to-transparent opacity-80"></div>
                 
                 <div className="absolute top-4 right-4 flex items-center gap-1 bg-yellow-500 px-3 py-1.5 rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-110">
                     <Star className="w-4 h-4 fill-slate-900 text-slate-900" />
@@ -37,7 +38,7 @@ const MovieCard = ({movie}) => {
                 
                 <button 
                     onClick={() => {navigate(`/movies/${movie._id}`); scrollTo(0,0)}}
-                    className="w-full cursor-pointer bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:from-yellow-400 hover:to-yellow-500 hover:shadow-lg hover:shadow-yellow-500/50 active:scale-95"
+                    className="w-full cursor-pointer bg-linear-to-r from-yellow-500 to-yellow-600 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:from-yellow-400 hover:to-yellow-500 hover:shadow-lg hover:shadow-yellow-500/50 active:scale-95"
                 >
                     Buy Tickets
                 </button>

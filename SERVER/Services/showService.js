@@ -8,15 +8,16 @@ export const movies = async () => {
       "https://api.themoviedb.org/3/movie/now_playing",
       {
         headers: {
-          Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
+          Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
         },
       },
     );
+    console.log(res.data);
 
     return res.data.results;
   } catch (err) {
     console.error("TMDB ERROR : ", err.response?.data || err.code);
-    throw err;
+    console.log(err)
   }
 };
 
@@ -27,10 +28,14 @@ export const shows = async (movieId, showsInput, showPrice) => {
     if (!movie) {
       const [detailsRes, creditsRes] = await Promise.all([
         axios.get(
-          `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=videos`,
-          { headers: { Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}` } }
+          `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.TMDB_API_KEY}&append_to_response=videos`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
+            },
+          },
         ),
-        axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+        axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.TMDB_API_KEY}`, {
           headers: { Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}` },
         }),
       ]);
@@ -47,8 +52,8 @@ export const shows = async (movieId, showsInput, showPrice) => {
         backdropPath: d.backdrop_path,
         voteAverage: d.vote_average,
         voteCount: d.vote_count,
-        genres: d.genres.map(g => g.name),
-        cast: c.cast.map(a => ({
+        genres: d.genres.map((g) => g.name),
+        cast: c.cast.map((a) => ({
           id: a.id,
           name: a.name,
           character: a.character,
@@ -61,16 +66,16 @@ export const shows = async (movieId, showsInput, showPrice) => {
           poster: d.poster_path,
           link: d.videos?.results?.[0]?.key
             ? `https://www.youtube.com/watch?v=${d.videos.results[0].key}`
-            : ""
-        }
+            : "",
+        },
       });
       
     }
 
     const showsToCreate = [];
 
-    showsInput.forEach(show => {
-      show.time.forEach(time => {
+    showsInput.forEach((show) => {
+      show.time.forEach((time) => {
         showsToCreate.push({
           movie: movie._id,
           showDateTime: new Date(`${show.date}T${time}`),
@@ -84,10 +89,55 @@ export const shows = async (movieId, showsInput, showPrice) => {
       await Show.insertMany(showsToCreate);
     }
 
-    return { movie, showsCreated: showsToCreate.length };
-
+    return { movie, showsCreated: showsToCreate };
   } catch (err) {
     console.error("SHOW CREATION ERROR:", err.message);
     throw err;
   }
 };
+
+export const allShows = async () => {
+  try {
+    const shows = await Show.find({ showDateTime: { $gte: new Date() } })
+      .populate("movie")
+      .sort({ showDateTime: 1 });
+
+    const uniqueShowc = new Set(shows.map((s) => s.movie));
+    return { shows: Array.from(uniqueShowc) };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const show = async (movieId) => {
+  try {
+    const shows = await Show.find({
+      movie: movieId,
+      showDateTime: { $gte: new Date() }
+    }).sort({ showDateTime: 1 });
+
+    const movie = await Movie.findById(movieId);
+
+    const dateTime = {};
+
+    shows.forEach(s => {
+      const date = s.showDateTime.toISOString().split("T")[0];
+
+      if (!dateTime[date]) {
+        dateTime[date] = [];
+      }
+
+      dateTime[date].push({
+        time: s.showDateTime,
+        showId: s._id
+      });
+    });
+
+    return { movie, dateTime };
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
